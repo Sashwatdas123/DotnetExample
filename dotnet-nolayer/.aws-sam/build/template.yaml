@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'Sample SAM Template for dotnet-nolayer
+
+  '
+Globals:
+  Function:
+    Timeout: 10
+    MemorySize: 512
+Resources:
+  HelloWorldFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: HelloWorldFunction
+      Handler: HelloWorld::HelloWorld.Function::FunctionHandler
+      Runtime: dotnet8
+      Architectures:
+      - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          NEW_RELIC_ACCOUNT_ID: 10196084
+          NEW_RELIC_EXTENSION_LOG_LEVEL: DEBUG
+          NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS: true
+          CORECLR_ENABLE_PROFILING: 1
+          CORECLR_PROFILER: '{36032161-FFC0-4B61-B559-F6C5D41BAE5A}'
+          CORECLR_NEWRELIC_HOME: /opt/lib/newrelic-dotnet-agent
+          CORECLR_PROFILER_PATH: /opt/lib/newrelic-dotnet-agent/libNewRelicProfiler.so
+          NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS: true
+          NEW_RELIC_HOST: staging-collector.newrelic.com
+          NEW_RELIC_APM_LAMBDA_MODE: true
+          NEW_RELIC_METRIC_ENDPOINT: https://staging-metric-api.newrelic.com/metric/v1
+          NEWRELIC_LOG_LEVEL: DEBUG
+          NEW_RELIC_LICENSE_KEY: 8171e58083600b068ff2190fe5befda8FFFFNRAL
+          NEW_RELIC_LOG_ENDPOINT: https://staging-log-api.newrelic.com/log/v1
+          NEW_RELIC_APP_NAME: dotnet-nolayer-HelloWorldFunction-GQ7LaQoJKBiM
+          NEW_RELIC_LAMBDA_EXTENSION_ENABLED: true
+          NEW_RELIC_LOG_CONSOLE: 1
+          NEW_RELIC_LOG_ENABLED: 1
+          NEW_RELIC_TELEMETRY_ENDPOINT: https://staging-cloud-collector.newrelic.com/aws/lambda/v1
+      Layers:
+      - Fn::Sub: arn:aws:lambda:us-east-1:466768951184:layer:NewRelicDotnet:8
+      Policies:
+      - AWSSecretsManagerGetSecretValuePolicy:
+          SecretArn:
+            Fn::ImportValue: NewRelicLicenseKeySecret-NewRelic-LicenseKeySecretARN
+    Metadata:
+      SamResourceId: HelloWorldFunction
+Outputs:
+  HelloWorldFunction:
+    Description: Hello World Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - HelloWorldFunction
+      - Arn
+  HelloWorldFunctionIamRole:
+    Description: Implicit IAM Role created for Hello World function
+    Value:
+      Fn::GetAtt:
+      - HelloWorldFunctionRole
+      - Arn
